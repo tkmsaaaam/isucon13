@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -105,19 +106,26 @@ func getIconHandler(c echo.Context) error {
 	}
 
 	var image []byte
-	if err := tx.GetContext(ctx, &image, "SELECT image FROM icons WHERE user_id = ?", user.ID); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return c.File(fallbackImage)
-		} else {
-			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get user icon: "+err.Error())
-		}
+	// if err := tx.GetContext(ctx, &image, "SELECT image FROM icons WHERE user_id = ?", user.ID); err != nil {
+	// 	if errors.Is(err, sql.ErrNoRows) {
+	// 		return c.File(fallbackImage)
+	// 	} else {
+	// 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get user icon: "+err.Error())
+	// 	}
+	// }
+
+	path := "/home/isucon/webapp/usericon" + strconv.FormatInt(user.ID, 10)
+
+	image, err = os.ReadFile(path)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get user icon: "+err.Error())
 	}
 
 	return c.Blob(http.StatusOK, "image/jpeg", image)
 }
 
 func postIconHandler(c echo.Context) error {
-	ctx := c.Request().Context()
+	// ctx := c.Request().Context()
 
 	if err := verifyUserSession(c); err != nil {
 		// echo.NewHTTPErrorが返っているのでそのまま出力
@@ -134,32 +142,43 @@ func postIconHandler(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "failed to decode the request body as json")
 	}
 
-	tx, err := dbConn.BeginTxx(ctx, nil)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to begin transaction: "+err.Error())
-	}
-	defer tx.Rollback()
+	// tx, err := dbConn.BeginTxx(ctx, nil)
+	// if err != nil {
+	// 	return echo.NewHTTPError(http.StatusInternalServerError, "failed to begin transaction: "+err.Error())
+	// }
+	// defer tx.Rollback()
 
-	if _, err := tx.ExecContext(ctx, "DELETE FROM icons WHERE user_id = ?", userID); err != nil {
+	// if _, err := tx.ExecContext(ctx, "DELETE FROM icons WHERE user_id = ?", userID); err != nil {
+	// 	return echo.NewHTTPError(http.StatusInternalServerError, "failed to delete old user icon: "+err.Error())
+	// }
+
+	// rs, err := tx.ExecContext(ctx, "INSERT INTO icons (user_id, image) VALUES (?, ?)", userID, req.Image)
+	// if err != nil {
+	// 	return echo.NewHTTPError(http.StatusInternalServerError, "failed to insert new user icon: "+err.Error())
+	// }
+
+	// iconID, err := rs.LastInsertId()
+	// if err != nil {
+	// 	return echo.NewHTTPError(http.StatusInternalServerError, "failed to get last inserted icon id: "+err.Error())
+	// }
+
+	// if err := tx.Commit(); err != nil {
+	// 	return echo.NewHTTPError(http.StatusInternalServerError, "failed to commit: "+err.Error())
+	// }
+
+	path := "/home/isucon/webapp/usericon" + strconv.FormatInt(userID, 10)
+	err := os.Remove(path)
+	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to delete old user icon: "+err.Error())
 	}
 
-	rs, err := tx.ExecContext(ctx, "INSERT INTO icons (user_id, image) VALUES (?, ?)", userID, req.Image)
+	err = os.WriteFile(path, req.Image, 0644)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to insert new user icon: "+err.Error())
 	}
 
-	iconID, err := rs.LastInsertId()
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get last inserted icon id: "+err.Error())
-	}
-
-	if err := tx.Commit(); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to commit: "+err.Error())
-	}
-
 	return c.JSON(http.StatusCreated, &PostIconResponse{
-		ID: iconID,
+		ID: userID,
 	})
 }
 
@@ -404,16 +423,23 @@ func fillUserResponse(ctx context.Context, tx *sqlx.Tx, userModel UserModel) (Us
 		return User{}, err
 	}
 
-	var image []byte
-	if err := tx.GetContext(ctx, &image, "SELECT image FROM icons WHERE user_id = ?", userModel.ID); err != nil {
-		if !errors.Is(err, sql.ErrNoRows) {
-			return User{}, err
-		}
-		image, err = os.ReadFile(fallbackImage)
-		if err != nil {
-			return User{}, err
-		}
+	// var image []byte
+	// if err := tx.GetContext(ctx, &image, "SELECT image FROM icons WHERE user_id = ?", userModel.ID); err != nil {
+	// 	if !errors.Is(err, sql.ErrNoRows) {
+	// 		return User{}, err
+	// 	}
+	// 	image, err = os.ReadFile(fallbackImage)
+	// 	if err != nil {
+	// 		return User{}, err
+	// 	}
+	// }
+	path := "/home/isucon/webapp/usericon" + strconv.FormatInt(userModel.ID, 10)
+
+	image, err := os.ReadFile(path)
+	if err != nil {
+		return User{}, err
 	}
+
 	iconHash := sha256.Sum256(image)
 
 	user := User{
