@@ -114,7 +114,7 @@ func getIconHandler(c echo.Context) error {
 	// 	}
 	// }
 
-	path := "/home/isucon/webapp/usericon" + strconv.FormatInt(user.ID, 10)
+	path := "/home/isucon/webapp/usericon/" + strconv.FormatInt(user.ID, 10)
 
 	image, err = os.ReadFile(path)
 	if err != nil {
@@ -166,7 +166,7 @@ func postIconHandler(c echo.Context) error {
 	// 	return echo.NewHTTPError(http.StatusInternalServerError, "failed to commit: "+err.Error())
 	// }
 
-	path := "/home/isucon/webapp/usericon" + strconv.FormatInt(userID, 10)
+	path := "/home/isucon/webapp/usericon/" + strconv.FormatInt(userID, 10)
 	err := os.Remove(path)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to delete old user icon: "+err.Error())
@@ -433,7 +433,7 @@ func fillUserResponse(ctx context.Context, tx *sqlx.Tx, userModel UserModel) (Us
 	// 		return User{}, err
 	// 	}
 	// }
-	path := "/home/isucon/webapp/usericon" + strconv.FormatInt(userModel.ID, 10)
+	path := "/home/isucon/webapp/userico/" + strconv.FormatInt(userModel.ID, 10)
 
 	image, err := os.ReadFile(path)
 	if err != nil {
