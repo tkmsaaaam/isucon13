@@ -1001,3 +1001,4 @@ VALUES
 	('six_pointed_star', 357, 2354, UNIX_TIMESTAMP()),
 	('control_knobs', 731, 2728, UNIX_TIMESTAMP()),
 	('+1', 731, 2728, UNIX_TIMESTAMP());
+CREATE INDEX reactions_ls_idx ON reactions(`livestream_id`);
