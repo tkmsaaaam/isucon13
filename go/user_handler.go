@@ -433,7 +433,7 @@ func fillUserResponse(ctx context.Context, tx *sqlx.Tx, userModel UserModel) (Us
 	// 		return User{}, err
 	// 	}
 	// }
-	path := "/home/isucon/webapp/userico/" + strconv.FormatInt(userModel.ID, 10)
+	path := "/home/isucon/webapp/usericon/" + strconv.FormatInt(userModel.ID, 10)
 
 	image, err := os.ReadFile(path)
 	if err != nil {
