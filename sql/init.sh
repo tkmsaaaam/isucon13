@@ -80,3 +80,7 @@ mysql -u"$ISUCON_DB_USER" \
 		"$ISUCON_DB_NAME" < initial_livecomments.sql
 
 bash ../pdns/init_zone.sh
+
+sudo rm -rf /home/isucon/webapp/usericon
+sudo mkdir /home/isucon/webapp/usericon
+sudo chmod 777 /home/isucon/webapp/usericon
