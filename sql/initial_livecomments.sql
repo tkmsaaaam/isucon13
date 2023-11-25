@@ -1001,3 +1001,4 @@ VALUES
 	(230, 4225, '次のトーナメント、応援しています！', UNIX_TIMESTAMP()),
 	(31, 7023, 'おめでとう！素敵な1年になりますように。', UNIX_TIMESTAMP()),
 	(686, 5680, 'こんにちは', UNIX_TIMESTAMP());
+CREATE INDEX livecomments_id_idx ON livecomments(`livestream_id`);
