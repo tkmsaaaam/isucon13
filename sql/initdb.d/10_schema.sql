@@ -94,7 +94,6 @@ CREATE TABLE `ng_words` (
   `word` VARCHAR(255) NOT NULL,
   `created_at` BIGINT NOT NULL
 ) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
-CREATE INDEX ng_words_word ON ng_words(`word`);
 
 -- ライブ配信に対するリアクション
 CREATE TABLE `reactions` (
