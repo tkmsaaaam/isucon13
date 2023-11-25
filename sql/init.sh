@@ -14,16 +14,17 @@ ISUCON_DB_PASSWORD=${ISUCON13_MYSQL_DIALCONFIG_PASSWORD:-isucon}
 ISUCON_DB_NAME=${ISUCON13_MYSQL_DIALCONFIG_DATABASE:-isupipe}
 
 # MySQLを初期化
-echo "DROP DATABASE isupipe;CREATE DATABASE isupipe;" | mysql -u"$ISUCON_DB_USER" \
+cat /home/isucon/webapp/sql/initdb.d/10_schema.sql | mysql -u"$ISUCON_DB_USER" \
 		-p"$ISUCON_DB_PASSWORD" \
 		--host "$ISUCON_DB_HOST" \
-		--port "$ISUCON_DB_PORT" \
-		"$ISUCON_DB_NAME"
+		--port "$ISUCON_DB_PORT"
+
 cat /home/isucon/webapp/sql/initdb.d/10_schema.sql | mysql -u"$ISUCON_DB_USER" \
 		-p"$ISUCON_DB_PASSWORD" \
 		--host "$ISUCON_DB_HOST" \
 		--port "$ISUCON_DB_PORT" \
 		"$ISUCON_DB_NAME"
+
 mysql -u"$ISUCON_DB_USER" \
 		-p"$ISUCON_DB_PASSWORD" \
 		--host "$ISUCON_DB_HOST" \
