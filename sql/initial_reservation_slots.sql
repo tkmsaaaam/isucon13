@@ -8759,3 +8759,4 @@ VALUES
 	(5, 1732395600, 1732399200),
 	(5, 1732399200, 1732402800),
 	(5, 1732402800, 1732406400);
+CREATE INDEX slot_at_idx ON reservation_slots(`start_at`, `end_at`);
