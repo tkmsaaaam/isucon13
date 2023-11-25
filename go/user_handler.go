@@ -118,7 +118,11 @@ func getIconHandler(c echo.Context) error {
 
 	image, err = os.ReadFile(path)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get user icon: "+err.Error())
+		if errors.Is(err, os.ErrNotExist) {
+			return c.File(fallbackImage)
+		} else {
+			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get user icon: "+err.Error())
+		}
 	}
 
 	return c.Blob(http.StatusOK, "image/jpeg", image)
@@ -168,7 +172,7 @@ func postIconHandler(c echo.Context) error {
 
 	path := "/home/isucon/webapp/usericon/" + strconv.FormatInt(userID, 10)
 	err := os.Remove(path)
-	if err != nil {
+	if err != nil && !errors.Is(err, os.ErrNotExist) {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to delete old user icon: "+err.Error())
 	}
 
@@ -437,7 +441,13 @@ func fillUserResponse(ctx context.Context, tx *sqlx.Tx, userModel UserModel) (Us
 
 	image, err := os.ReadFile(path)
 	if err != nil {
-		return User{}, err
+		if !errors.Is(err, os.ErrNotExist) {
+			return User{}, err
+		}
+		image, err = os.ReadFile(fallbackImage)
+		if err != nil {
+			return User{}, err
+		}
 	}
 
 	iconHash := sha256.Sum256(image)
