@@ -413,14 +413,16 @@ func moderateHandler(c echo.Context) error {
 			}
 		}
 	}
-	query := "DELETE FROM livecomments WHERE id IN (?);"
-	sql, params, err := sqlx.In(query, idList)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to delete old livecomments that hit spams: "+err.Error())
-	}
+	if len(idList) != 0 {
+		query := "DELETE FROM livecomments WHERE id IN (?);"
+		sql, params, err := sqlx.In(query, idList)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "failed to delete old livecomments that hit spams: "+err.Error())
+		}
 
-	if _, err := tx.ExecContext(ctx, sql, params...); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to delete old livecomments that hit spams: "+err.Error())
+		if _, err := tx.ExecContext(ctx, sql, params...); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "failed to delete old livecomments that hit spams: "+err.Error())
+		}
 	}
 
 	// for _, ngword := range ngwords {
