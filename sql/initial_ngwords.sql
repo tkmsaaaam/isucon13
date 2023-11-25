@@ -1,3 +1,4 @@
+DROP INDEX ng_words_word ON ng_words;
 INSERT INTO ng_words (user_id, livestream_id, word, created_at)
 VALUES
 	(785, 2782, '2相コミット', UNIX_TIMESTAMP()),
@@ -14337,3 +14338,4 @@ VALUES
 	(512, 3508, '磁場振動共鳴増幅器', UNIX_TIMESTAMP()),
 	(170, 3166, '加速腐食試験装置', UNIX_TIMESTAMP()),
 	(344, 343, '椅子パイプ', UNIX_TIMESTAMP());
+CREATE INDEX ng_words_word ON ng_words(`word`);
